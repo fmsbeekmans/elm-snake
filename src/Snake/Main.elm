@@ -3,7 +3,9 @@ module Snake.Main exposing (main)
 import Html exposing (..)
 import Html.App
 import Html.Attributes exposing (..)
+
 import Keyboard exposing (..)
+import Time exposing (Time, second)
 
 import Maybe exposing (..)
 import List.Nonempty as Nonempty
@@ -52,7 +54,7 @@ type alias Model =
   }
 
 type Msg
- = Tick
+ = Tick Time
  | SetDirection Direction
  | Reseed Point
  | NoOp
@@ -66,7 +68,7 @@ initialModel =
   , food = ( 0, 0 )
   -- , snake = (7, 8) ::: ((8, 8) ::: (fromElement (9, 8)))
   , snake = Nonempty.Nonempty ( 7, 8 ) [ ( 8, 8 ), ( 9, 8 ) ]
-  , direction = right
+  , direction = up
   }
 
 init : ( Model, Cmd Msg )
@@ -77,7 +79,7 @@ update msg model =
     case msg of
       SetDirection direction -> ( { model | direction = direction }, Cmd.none )
       Reseed p -> ( { model | food = p }, Cmd.none )
-      Tick -> tick model
+      Tick _ -> tick model
       NoOp -> ( model, Cmd.none )
 
 tick : Model -> ( Model, Cmd Msg )
@@ -110,10 +112,12 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
+  Sub.batch
+  [ Time.every second Tick,
     Keyboard.presses (\code -> case code of
       97 -> SetDirection left
       44 -> SetDirection up
       101 -> SetDirection right
       111 -> SetDirection down
-      32 -> Tick
       _ -> NoOp)
+  ]
