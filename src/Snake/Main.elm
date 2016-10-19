@@ -7,7 +7,7 @@ import Html.Attributes exposing (..)
 import Keyboard exposing (..)
 import Time exposing (Time, second)
 
-import Maybe exposing (..)
+import Maybe exposing (withDefault)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
@@ -118,7 +118,7 @@ view model =
 tiles : Model -> List (Html a)
 tiles model =
   [ tile model.food (text "x")
-  ]
+  ] ++ (map (\p -> tile p (text "-")) (Nonempty.toList model.snake))
 
 tile : Point -> Html a -> Html a
 tile p content =
@@ -138,8 +138,8 @@ subscriptions model =
   [ Time.every second Tick,
     Keyboard.presses (\code -> case code of
       97 -> SetDirection Left
-      44 -> SetDirection Up
+      44 -> SetDirection Down
       101 -> SetDirection Right
-      111 -> SetDirection Down
+      111 -> SetDirection Up
       _ -> NoOp)
   ]
