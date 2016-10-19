@@ -15,22 +15,25 @@ import Random
 
 import Json.Encode
 
-type alias Direction = (Int, Int)
+type Direction = Left | Up | Right | Down
 
-right : Direction
-right = (1, 0)
+directionToDifference : Direction -> Point
+directionToDifference d = case d of
+  Right -> (1, 0)
+  Up -> (0, 1)
+  Left -> (-1, 0)
+  Down -> (0, -1)
 
-up : Direction
-up = (0, 1)
-
-left : Direction
-left = (-1, 0)
-
-down : Direction
-down = (0, -1)
+directionToRotation : Direction -> Int
+directionToRotation d = case d of
+  Right -> 0
+  Up -> 270
+  Left -> 180
+  Down -> 90
 
 add : Point -> Direction -> Point
-add (x, y) (dx, dy) = (x + dx, y + dy)
+add (x, y) d = case directionToDifference d of
+  (dx, dy) -> (x + dx, y + dy)
 
 type alias Point = (Int, Int)
 
@@ -70,7 +73,7 @@ initialModel =
   , food = ( 10, 10 )
   -- , snake = (7, 8) ::: ((8, 8) ::: (fromElement (9, 8)))
   , snake = Nonempty.Nonempty ( 7, 8 ) [ ( 8, 8 ), ( 9, 8 ) ]
-  , direction = up
+  , direction = Up
   }
 
 init : ( Model, Cmd Msg )
@@ -134,9 +137,9 @@ subscriptions model =
   Sub.batch
   [ Time.every second Tick,
     Keyboard.presses (\code -> case code of
-      97 -> SetDirection left
-      44 -> SetDirection up
-      101 -> SetDirection right
-      111 -> SetDirection down
+      97 -> SetDirection Left
+      44 -> SetDirection Up
+      101 -> SetDirection Right
+      111 -> SetDirection Down
       _ -> NoOp)
   ]
