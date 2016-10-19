@@ -96,7 +96,7 @@ tick model =
     h = Nonempty.head model.snake
     tl = Nonempty.tail model.snake
     to = (add h model.direction)
-    newTail = withDefault [] (tail (reverse tl))
+    newTail = reverse (withDefault [] (tail (reverse tl)))
   in if (active && (to == model.food)) then -- eat!
     ( { model | snake = Nonempty.Nonempty to ( h :: tl ) }, newFood )
   else if member to tl then -- eat self
