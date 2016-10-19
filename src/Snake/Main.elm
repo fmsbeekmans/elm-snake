@@ -13,6 +13,8 @@ import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
 import Random
 
+import Json.Encode
+
 type alias Direction = (Int, Int)
 
 right : Direction
@@ -65,7 +67,7 @@ maxPoint = (16, 16)
 initialModel : Model
 initialModel =
   { status = Active
-  , food = ( 0, 0 )
+  , food = ( 10, 10 )
   -- , snake = (7, 8) ::: ((8, 8) ::: (fromElement (9, 8)))
   , snake = Nonempty.Nonempty ( 7, 8 ) [ ( 8, 8 ), ( 9, 8 ) ]
   , direction = up
@@ -108,7 +110,24 @@ view : Model -> Html Msg
 view model =
   div
     []
-    [ text (toString model) ]
+    (tiles model)
+
+tiles : Model -> List (Html a)
+tiles model =
+  [ tile model.food (text "x")
+  ]
+
+tile : Point -> Html a -> Html a
+tile p content =
+  div
+    [ style
+      [ ("left", (toString (30 * (fst p))) ++ "px")
+      , ("top", (toString (30 * (snd p))) ++ "px")
+--       , ("transform", "rotate(20deg)")
+      , ("position", "absolute")
+      ]
+    ]
+    [ content ]
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
