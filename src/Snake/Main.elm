@@ -13,6 +13,8 @@ import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
 import Random
 
+import Debug
+
 import Json.Encode
 
 type Direction = Left | Up | Right | Down
@@ -111,6 +113,7 @@ newFood = Random.generate
 
 view : Model -> Html Msg
 view model =
+  Debug.log (toString model)
   div
     []
     (tiles model)
