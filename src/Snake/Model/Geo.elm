@@ -4,8 +4,8 @@ type alias Point = (Int, Int)
 
 type Direction = Left | Up | Right | Down
 
-add : Point -> Direction -> Point
-add (x, y) d = case directionToDifference d of
+move : Point -> Direction -> Point
+move (x, y) d = case directionToDifference d of
   (dx, dy) -> (x + dx, y + dy)
 
 directionToDifference : Direction -> Point

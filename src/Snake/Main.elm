@@ -4,19 +4,19 @@ import Html exposing (..)
 import Html.App
 import Html.Attributes exposing (..)
 
-import Keyboard exposing (..)
-import Time exposing (Time, second)
-
 import Maybe exposing (withDefault)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
-import Random
+
+import Time exposing (Time, second)
+import Keyboard exposing (..)
 
 import Snake.Model exposing (..)
 import Snake.Model.Geo exposing (..)
+import Snake.Model.Snake exposing (..)
 
-import Debug
+import Snake.Msg exposing (..)
 
 import Json.Encode
 
@@ -36,24 +36,6 @@ main =
         , view = view
         }
 
-type Msg
- = Tick Time
- | SetDirection Direction
- | Reseed Point
- | NoOp
-
-maxPoint : Point
-maxPoint = (16, 16)
-
-initialModel : Model
-initialModel =
-  { status = Active
-  , food = ( 10, 10 )
-  -- , snake = (7, 8) ::: ((8, 8) ::: (fromElement (9, 8)))
-  , snake = Nonempty.Nonempty ( 7, 8 ) [ ( 8, 8 ), ( 9, 8 ) ]
-  , direction = Up
-  }
-
 init : ( Model, Cmd Msg )
 init = ( initialModel, Cmd.none )
 
@@ -62,34 +44,17 @@ update msg model =
     case msg of
       SetDirection direction -> ( { model | direction = direction }, Cmd.none )
       Reseed p -> ( { model | food = p }, Cmd.none )
-      Tick _ -> tick model
+      Tick _ ->
+        if model.status == Active then
+          case moveSnake model.snake model.direction model.food of
+            ( _, False, _ ) -> ( { model | status = Lost }, Cmd.none )
+            ( snake, True, cmd ) -> ( { model | snake = snake}, cmd )
+        else
+          ( model, Cmd.none )
       NoOp -> ( model, Cmd.none )
-
-tick : Model -> ( Model, Cmd Msg )
-tick model =
-  let
-    active = model.status == Active
-    h = Nonempty.head model.snake
-    tl = Nonempty.tail model.snake
-    to = (add h model.direction)
-    newTail = reverse (withDefault [] (tail (reverse tl)))
-  in if (active && (to == model.food)) then -- eat!
-    ( { model | snake = Nonempty.Nonempty to ( h :: tl ) }, newFood )
-  else if member to tl then -- eat self
-    ( { model | status = Lost}, Cmd.none )
-  -- else if wall
-  else
-    ( { model | snake = Nonempty.Nonempty to ( h :: newTail ) }, Cmd.none )
-
-newFood : Cmd Msg
-newFood = Random.generate
-  Reseed (Random.pair
-    (Random.int 0 (fst maxPoint - 1))
-    (Random.int 0 (snd maxPoint - 1)))
 
 view : Model -> Html Msg
 view model =
-  Debug.log (toString model)
   div
     []
     (tiles model)
