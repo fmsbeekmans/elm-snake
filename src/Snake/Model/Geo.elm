@@ -14,3 +14,10 @@ directionToDifference d = case d of
   Up -> (0, 1)
   Left -> (-1, 0)
   Down -> (0, -1)
+
+opposite : Direction -> Direction
+opposite d = case d of
+  Right -> Left
+  Left -> Right
+  Up -> Down
+  Down -> Up
