@@ -13,11 +13,11 @@ import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
 import Random
 
+import Snake.Model exposing (..)
+
 import Debug
 
 import Json.Encode
-
-type Direction = Left | Up | Right | Down
 
 directionToDifference : Direction -> Point
 directionToDifference d = case d of
@@ -37,13 +37,6 @@ add : Point -> Direction -> Point
 add (x, y) d = case directionToDifference d of
   (dx, dy) -> (x + dx, y + dy)
 
-type alias Point = (Int, Int)
-
-type alias Snake = Nonempty Point
-
-type Status = Active | Paused | Lost | Won
-
-
 main : Program Never
 main =
     Html.App.program
@@ -52,13 +45,6 @@ main =
         , subscriptions = subscriptions
         , view = view
         }
-
-type alias Model =
-  { status : Status
-  , food : Point
-  , snake : Snake
-  , direction : Direction
-  }
 
 type Msg
  = Tick Time
