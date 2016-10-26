@@ -1,11 +1,9 @@
 module Snake.Model exposing (..)
 
+import Snake.Model.Geo exposing (..)
+
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty, (:::), fromElement)
-
-type Direction = Left | Up | Right | Down
-
-type alias Point = (Int, Int)
 
 type alias Snake = Nonempty Point
 

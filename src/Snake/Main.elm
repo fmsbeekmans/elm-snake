@@ -14,17 +14,11 @@ import List exposing (..)
 import Random
 
 import Snake.Model exposing (..)
+import Snake.Model.Geo exposing (..)
 
 import Debug
 
 import Json.Encode
-
-directionToDifference : Direction -> Point
-directionToDifference d = case d of
-  Right -> (1, 0)
-  Up -> (0, 1)
-  Left -> (-1, 0)
-  Down -> (0, -1)
 
 directionToRotation : Direction -> Int
 directionToRotation d = case d of
@@ -32,10 +26,6 @@ directionToRotation d = case d of
   Up -> 270
   Left -> 180
   Down -> 90
-
-add : Point -> Direction -> Point
-add (x, y) d = case directionToDifference d of
-  (dx, dy) -> (x + dx, y + dy)
 
 main : Program Never
 main =
