@@ -29,7 +29,7 @@ points (Snake h dirs) =
     let
       p = d
         |> opposite
-        |> move p
+        |> move (Nonempty.head ps)
       in p ::: ps
     ) (fromElement h) dirs)
 

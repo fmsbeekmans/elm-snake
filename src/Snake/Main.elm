@@ -63,7 +63,7 @@ view model =
 tiles : Model -> List (Html a)
 tiles model =
   [ tile model.food (text "x")
-  ] ++ (map (\p -> tile p (text "-")) (toList (points model.snake)))
+  ] ++ (map (\p -> tile p (text "^")) (toList (points model.snake)))
 
 tile : Point -> Html a -> Html a
 tile p content =
@@ -80,7 +80,7 @@ tile p content =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.batch
-  [ Time.every second Tick,
+  [ Time.every (second / 3) Tick,
     Keyboard.presses (\code -> case code of
       97 -> SetDirection Left
       44 -> SetDirection Down
