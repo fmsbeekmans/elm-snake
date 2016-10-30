@@ -5,9 +5,8 @@ import Html.App
 import Html.Attributes exposing (..)
 
 import Maybe exposing (withDefault)
-import List.Nonempty as Nonempty
-import List.Nonempty exposing (Nonempty, (:::), fromElement)
 import List exposing (..)
+import List.Nonempty exposing (toList)
 
 import Time exposing (Time, second)
 import Keyboard exposing (..)
@@ -17,6 +16,8 @@ import Snake.Model.Geo exposing (..)
 import Snake.Model.Snake exposing (..)
 
 import Snake.Msg exposing (..)
+
+import Debug exposing (log)
 
 import Json.Encode
 
@@ -62,7 +63,7 @@ view model =
 tiles : Model -> List (Html a)
 tiles model =
   [ tile model.food (text "x")
-  ] ++ (map (\p -> tile p (text "-")) (Nonempty.toList model.snake))
+  ] ++ (map (\p -> tile p (text "-")) (toList (points model.snake)))
 
 tile : Point -> Html a -> Html a
 tile p content =

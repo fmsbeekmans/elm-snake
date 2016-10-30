@@ -1,39 +1,60 @@
 module Snake.Model.Snake exposing (..)
 
+import List exposing (tail, foldl, reverse)
+import List.Nonempty as Nonempty
+import List.Nonempty exposing (Nonempty, fromElement, (:::), toList)
+
+import Maybe exposing (withDefault)
+
 import Snake.Model.Geo exposing (..)
 
 import Snake.Msg exposing (..)
 
-import List.Nonempty as Nonempty
-import List.Nonempty exposing (Nonempty, (:::), reverse)
-
 import Debug
 
-type alias Snake = Nonempty Point
+
+type Snake = Snake Point (List Direction)
 
 type alias Food = Point
 
 snakeHead : Snake -> Point
-snakeHead = Nonempty.head
+snakeHead (Snake h _) = h
 
-body : Snake -> List Point
-body = Nonempty.tail
+directions : Snake -> List Direction
+directions (Snake _ ds) = ds
+
+points : Snake -> (Nonempty Point)
+points (Snake h dirs) =
+  Nonempty.reverse (foldl (\d ps ->
+    let
+      p = d
+        |> opposite
+        |> move p
+      in p ::: ps
+    ) (fromElement h) dirs)
+
+dropLast : (List a) -> (List a)
+dropLast xs = xs
+  |> reverse
+  |> tail
+  |> withDefault []
+  |> reverse
 
 moveSnake : Snake -> Direction -> Food -> (Snake, Bool, Cmd Msg)
 moveSnake snake direction food =
   let
     to = direction
       |> move (snakeHead snake)
-    newTailWithoudFood = snake
-      |> reverse
-      |> body
-      |> List.reverse
+    newTailPoints = snake
+      |> points
+      |> toList
+      |> dropLast
   -- eat self
-  in if List.member to newTailWithoudFood then
+  in if List.member to newTailPoints then
     ( snake, False, Cmd.none )
   -- eat food
   else if to == food then
-    ( to ::: snake, True , newFood )
+    ( Snake to  (direction :: (directions snake)) , True , newFood )
   -- step
   else
-    ( Nonempty.Nonempty to newTailWithoudFood, True, Cmd.none )
+    ( Snake to (direction :: (dropLast (directions snake))), True, Cmd.none )
