@@ -43,6 +43,11 @@ init = ( initialModel, Cmd.none )
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+      SetPause p ->
+        case ( p, model.status ) of
+          ( True, Active ) -> ( { model | status = Paused}, Cmd.none )
+          ( False, Paused ) -> ( { model | status = Active}, Cmd.none )
+          _ -> ( model, Cmd.none )
       SetDirection direction -> ( { model | direction = direction }, Cmd.none )
       Reseed p -> ( { model | food = p }, Cmd.none )
       Tick _ ->
@@ -79,12 +84,20 @@ tile p content =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.batch
-  [ Time.every (second / 3) Tick,
+  if model.status == Paused then
     Keyboard.presses (\code -> case code of
-      97 -> SetDirection Left
-      44 -> SetDirection Down
-      101 -> SetDirection Right
-      111 -> SetDirection Up
+      32 -> SetPause False
       _ -> NoOp)
-  ]
+  else
+    Sub.batch
+    [ Time.every (second / 3) Tick,
+      Keyboard.presses (\code -> case code of
+        97 -> SetDirection Left
+        44 -> SetDirection Down
+        101 -> SetDirection Right
+        111 -> SetDirection Up
+
+        32 -> SetPause True
+
+        _ -> NoOp)
+    ]

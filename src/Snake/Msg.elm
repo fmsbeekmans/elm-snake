@@ -8,6 +8,7 @@ import Random
 
 type Msg
  = Tick Time
+ | SetPause Bool
  | SetDirection Direction
  | Reseed Point
  | NoOp
