@@ -1,6 +1,6 @@
 module Snake.Model.Snake exposing (..)
 
-import List exposing (tail, foldl, reverse)
+import List exposing (tail, foldl, reverse, length)
 import List.Nonempty as Nonempty
 import List.Nonempty exposing (Nonempty, fromElement, (:::), toList)
 
@@ -58,3 +58,6 @@ moveSnake snake direction food =
   -- step
   else
     ( Snake to (direction :: (dropLast (directions snake))), True, Cmd.none )
+
+count : Snake -> Int
+count (Snake _ ds) = 1 + length ds

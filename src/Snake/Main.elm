@@ -15,18 +15,13 @@ import Snake.Model exposing (..)
 import Snake.Model.Geo exposing (..)
 import Snake.Model.Snake exposing (..)
 
+import Snake.View exposing (..)
+
 import Snake.Msg exposing (..)
 
 import Debug exposing (log)
 
 import Json.Encode
-
-directionToRotation : Direction -> Int
-directionToRotation d = case d of
-  Right -> 0
-  Up -> 270
-  Left -> 180
-  Down -> 90
 
 main : Program Never
 main =
@@ -69,10 +64,11 @@ view model =
     []
     (tiles model)
 
+
 tiles : Model -> List (Html a)
 tiles model =
   [ tile model.food (text "x")
-  ] ++ (map (\p -> tile p (text "^")) (toList (points model.snake)))
+  ] ++ (drawSnake model.snake model.direction)
 
 tile : Point -> Html a -> Html a
 tile p content =
