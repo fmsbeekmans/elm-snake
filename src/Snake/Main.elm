@@ -48,7 +48,11 @@ update msg model =
           ( True, Active ) -> ( { model | status = Paused}, Cmd.none )
           ( False, Paused ) -> ( { model | status = Active}, Cmd.none )
           _ -> ( model, Cmd.none )
-      SetDirection direction -> ( { model | direction = direction }, Cmd.none )
+      SetDirection direction ->
+        if direction /= opposite model.direction then
+          ( { model | direction = direction }, Cmd.none )
+        else
+          ( model, Cmd.none )
       Reseed p -> ( { model | food = p }, Cmd.none )
       Tick _ ->
         if model.status == Active then
